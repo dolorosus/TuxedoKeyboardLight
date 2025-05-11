@@ -37,9 +37,9 @@ class KeyboardLighting:
 
     def _init_key_paths(self):
 
-        #
         # There is no such thing as 'rgb:kbd_backlight_0'
-        # User keyindex 126 to access the lightbar
+        # Use keyindex 126 to access the lightbar
+        
         keys = {
             0: os.path.join(self.classpath, "rgb:kbd_backlight"),
             126: os.path.join(self.classpath, "rgb:lightbar"),
@@ -93,7 +93,6 @@ class KeyboardLighting:
 
     @staticmethod
     def _hex_to_rgb(hex_color):
-
         s = str(hex_color).lstrip("#").upper()
         if len(s) != 6:
             raise ValueError(
