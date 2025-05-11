@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
-#
-#
 # Switches on the keyboard illumination with a customisable brightness (--brightness).
 # Switches the keyboard backlighting off if no mouse or keyboard inputs have been made
 # after a configurable period of time (--timeout).
-#
-#
+
 import asyncio
 import time
 import logging
