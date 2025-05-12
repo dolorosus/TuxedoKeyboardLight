@@ -1,4 +1,4 @@
-# Keyboard lighting control for Tuxedo Stellaris Gen. 6
+# Keyboard lighting control for Tuxedo Stellaris Gen. 6 (and maybe others) 
 
 ## Switches the keyboard lighting on with a certain brightness and switches it off again after an adjustable period of inactivity.
 
