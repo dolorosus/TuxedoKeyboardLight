@@ -15,6 +15,7 @@ python3 -m venv "/tmp/.venv$pname"
 
 echo "install pyinstaller to /tmp/.venv$pname"
 pip install pyinstaller
+pip install evdev
 set +e
 
 rm -rf {dist,build} &>/dev/null
