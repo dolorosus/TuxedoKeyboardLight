@@ -42,7 +42,7 @@ StandardOutput="/var/log/$pname.log"
 StandardError="/var/log/$pname.log"
 
 ExecStartPre=-/usr/bin/killall -9 "$pname"
-ExecStart="/usr/local/bin/$pname" --brightness 5 --timeout 20 --colour #0000ff
+ExecStart="/usr/local/bin/$pname" --brightness 5 --timeout 20 
 
 RestartSec=2
 Restart=on-success
