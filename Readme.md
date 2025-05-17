@@ -10,6 +10,81 @@ This script also accepts values less than 10 (20%)
 ## Other Hardware
 Adaptation to other hardware that also follows the sysfs standard for keyboard illumination should be feasible without any problems.
 
-## How to use?
-Just start the script in background (Root privilleges needed) or start it as a systemd service.
-It take ```--brightness``` (1-50) and ```--timeout``` in seconds as parameters.
+## Features
+
+- Turns on backlight when mouse/keyboard activity is detected
+- Automatic shutoff after configurable inactivity period
+- Customizable RGB colors and brightness levels
+- Persistent system service with automatic restart
+- Logging to `/var/log/keyboardlight-idle.log`
+
+## Requirements
+
+- Linux with sysfs LED support
+- Python 3.7+
+- systemd init system
+- Root privileges for installation
+
+## Installation
+
+1. **Clone the repository**
+```
+git clone https://github.com/yourusername/keyboardlight-idle.git
+cd keyboardlight-idle
+```
+
+2. **Build and install executable**
+```
+bash ./install.sh
+```
+
+3. **Verify service status**
+```
+systemctl status keyboardlight-idle
+```
+
+## Configuration
+
+Edit the service file to modify startup parameters:
+```
+sudo nano /etc/systemd/system/keyboardlight-idle.service
+```
+
+**Recommended parameters:**
+```
+ExecStart=/usr/local/bin/keyboardlight-idle \
+  --brightness 4 \      # 0-50 intensity
+  --timeout 20 \        # Seconds until standby
+  --colour "#0000ff"    # Default blue
+```
+
+## Service Management
+
+| Command | Description |
+|---------|-------------|
+| `sudo systemctl start keyboardlight-idle` | Start service |
+| `sudo systemctl stop keyboardlight-idle` | Stop service |
+| `sudo systemctl enable keyboardlight-idle` | Enable autostart |
+| `sudo journalctl -u keyboardlight-idle` | View logs |
+
+## Build Details
+
+The installation script:
+- Creates isolated Python virtual environment
+- Installs PyInstaller and dependencies
+- Builds single-file executable
+- Deploys to `/usr/local/bin`
+- Configures logging rotation
+
+## Notes
+
+- Requires compatible RGB keyboard with sysfs interface
+- Debug using `journalctl -u keyboardlight-idle -f`
+- Uninstall by removing:
+  - `/usr/local/bin/keyboardlight-idle`
+  - `/etc/systemd/system/keyboardlight-idle.service`
+
+## License
+
+CC BY-NC/CC BY-NC-SA
+
