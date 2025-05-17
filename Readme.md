@@ -54,7 +54,7 @@ sudo nano /etc/systemd/system/keyboardlight-idle.service
 ```
 ExecStart=/usr/local/bin/keyboardlight-idle \
   --brightness 4 \      # 0-50 intensity
-  --timeout 20 \        # Seconds until standby
+  --timeout 20 \        # Seconds until keybaordlight is turned off
   --colour "#0000ff"    # Default blue
 ```
 
