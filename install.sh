@@ -1,59 +1,54 @@
 #!/bin/bash
-#
-#
-#
 
-export pname="KeyboardLightControl"
+pname="keyboardlight-idle"
+tmp_dir="/tmp/$pname"
+venv_dir="/tmp/.venv$pname"
+service_file="/tmp/$pname.service"
+dist_dir="dist"
+build_dir="build"
 
-mkdir "/tmp/$pname"
-rm -rf "/tmp/$pname/*"
+rm -rf "$tmp_dir"
+mkdir -p "$tmp_dir"
+rm -rf "$dist_dir" "$build_dir"
 
-set -e
-echo "creating venv in /tmp/.venv$pname"
-python3 -m venv "/tmp/.venv$pname"
-. "/tmp/.venv$pname/bin/activate"
+set -euo pipefail
 
-echo "install pyinstaller to /tmp/.venv$pname"
+echo "creating venv in $venv_dir"
+python3 -m venv "$venv_dir"
+source "$venv_dir/bin/activate"
+
+echo "install pyinstaller to $venv_dir"
 pip install -r requirements.txt
-set +e
 
-rm -rf {dist,build} &>/dev/null
-set -e
 pyinstaller --onefile --noupx --optimize 2 --strip "$pname.py"
-set +e
-echo "systemctl stop $pname"
-sudo systemctl stop "$pname" 2>/dev/null
 
-set -e
-echo cp "dist/$pname" /usr/local/bin
-sudo cp "dist/$pname" /usr/local/bin 
+echo "stopping $pname"
+sudo systemctl stop "$pname" 2>/dev/null || true
 
-[ -f "/etc/systemd/system/$pname.service" ] || {
-    echo "no service file found. Generating a new one as /etc/systemd/system/$pname.service"
-cat <<EOF >>"/tmp/$pname.service"
+echo "copy dist/$pname to /usr/local/bin"
+sudo cp "$dist_dir/$pname" /usr/local/bin/
+
+# create systemd Service-Unit 
+cat >"$service_file" <<EOF
 [Unit]
 Description=Turn off Keyboard light after inactivity
 
 [Service]
 Type=simple
-
-StandardOutput="/var/log/$pname.log"
-StandardError="/var/log/$pname.log"
-
-ExecStartPre=-/usr/bin/killall -9 "$pname"
-ExecStart="/usr/local/bin/$pname" --brightness 5 --timeout 20 
-
-RestartSec=2
+ExecStartPre=-/usr/bin/killall -9 $pname
+ExecStart=/usr/local/bin/$pname --brightness 4 --timeout 20 --colour #0000ff
+StandardOutput=append:/var/log/$pname.log
+StandardError=append:/var/log/$pname.log
 Restart=on-success
+RestartSec=2
 
 [Install]
 WantedBy=multi-user.target
-
 EOF
 
-    sudo mv "/tmp/$pname.service" "/etc/systemd/system/$pname.service"
-}
+sudo mv "$service_file" "/etc/systemd/system/$pname.service"
 
-echo "enable and start service"
+echo "enable and start $pname.service"
+sudo systemctl daemon-reload
 sudo systemctl enable "$pname.service"
 sudo systemctl start "$pname.service"
