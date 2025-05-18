@@ -7,6 +7,7 @@ Because by default the keyboard lighting is only switched off when the screen sa
 The minimum brightness was also too bright for me personally.
 This script also accepts values less than 10 (20%)
 
+
 ## Other Hardware
 Adaptation to other hardware that also follows the sysfs standard for keyboard illumination should be feasible without any problems.
 
@@ -17,6 +18,8 @@ Adaptation to other hardware that also follows the sysfs standard for keyboard i
 - Customizable RGB colors and brightness levels
 - Persistent system service with automatic restart
 - Logging to `/var/log/keyboardlight-idle.log`
+- If the backligght brightness is set to 0 (keyboard illumination is turned off),
+  the default settings are used
 
 ## Requirements
 
