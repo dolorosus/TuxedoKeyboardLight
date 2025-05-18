@@ -5,7 +5,7 @@
 ## Why this little script?
 Because by default the keyboard lighting is only switched off when the screen saver appears. This time span was too long for me personally.
 The minimum brightness was also too bright for me personally.
-This script also accepts values less than 10 (20%)
+This script also accepts brightness values less than 10 (20%)
 
 
 ## Other Hardware
