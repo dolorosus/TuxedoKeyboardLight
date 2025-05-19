@@ -110,12 +110,6 @@ class KeyboardLighting:
     def set_leds_on(self):
         if self.last_brightness <= 2:
             self.last_brightness = self.default_brightness
-            self.set_brightness(0, self.last_brightness)
-            self.set_default_keyboard_colours()
-        else:
-            self.set_brightness(0, self.last_brightness)
-            self.restore_keyboard_colours()
-
         self.set_brightness(0, self.last_brightness)
 
     def set_leds_off(self):
@@ -124,6 +118,7 @@ class KeyboardLighting:
         for i in range(126, -1, -1):
             self.set_colour(i, (0, 0, 0))
         self.set_brightness(0, 0)
+        self.restore_keyboard_colours()
 
     def get_brightness(self, key_index):
         try:
