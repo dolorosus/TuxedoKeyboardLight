@@ -88,7 +88,6 @@ class KeyboardLighting:
         return cache
 
     def restore_keyboard_colours(self):
-
         for key, c in self.colour_cache.items():
             if c == (0, 0, 0):
                 c = self.default_colour
@@ -110,6 +109,7 @@ class KeyboardLighting:
     def set_leds_on(self):
         if self.last_brightness <= 2:
             self.last_brightness = self.default_brightness
+            self.set_default_keyboard_colours()
         self.set_brightness(0, self.last_brightness)
 
     def set_leds_off(self):
