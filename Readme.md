@@ -18,7 +18,7 @@ Adaptation to other hardware that also follows the sysfs standard for keyboard i
 - Customizable RGB colors and brightness levels
 - Persistent system service with automatic restart
 - Logging to `/var/log/keyboardlight-idle.log`
-- If the backligght brightness is set to 0 (keyboard illumination is turned off),
+- If the backlight brightness is set to 0 (keyboard illumination is turned off),
   the default settings are used
 
 ## Requirements
@@ -81,6 +81,7 @@ The installation script:
 
 ## Notes
 
+- To set the default colour, just turn the keyboardlight off. After reaching the timeout, the keyboard will be initialized with the setting from --brightness and --colour 
 - Requires compatible RGB keyboard with sysfs interface
 - Debug using `journalctl -u keyboardlight-idle -f`
 - Uninstall by removing:
