@@ -88,7 +88,7 @@ The installation script:
   - `/usr/local/bin/keyboardlight-idle`
   - `/etc/systemd/system/keyboardlight-idle.service`
 
-If you're using Plasma, you can define keyboard shortcuts for controlling the keyboard illumination brightness e.g. meta+F1 and meta+F2.
+If you're using Plasma, you can define keyboard shortcuts for controlling the keyboard illumination brightness e.g. `meta+F1` and `meta+F2`.
 
 ## License
 
