@@ -4,8 +4,7 @@
 
 ## Why this little script?
 Because by default the keyboard lighting is only switched off when the screen saver appears. This time span was too long for me personally.
-The minimum brightness was also too bright for me personally.
-This script also accepts brightness values less than 10 (20%)
+This script turnes the keyboard illumination after a configurable timespan `--timespan ` off. It remembers the current brightness and color settings. If the keyboard illumiation is turned off it will be set to the vaules given in `--brightness` and `--colour`.
 
 
 ## Other Hardware
@@ -56,10 +55,15 @@ sudo nano /etc/systemd/system/keyboardlight-idle.service
 **Recommended parameters:**
 ```
 ExecStart=/usr/local/bin/keyboardlight-idle \
-  --brightness 4 \      # 0-50 intensity
-  --timeout 20 \        # Seconds until keybaordlight is turned off
-  --colour "#0000ff"    # Default blue
+  --timeout 20 \
+  --brightness 4 \           
+  --colour "#0000ff"  
 ```
+  `--timeout `     Seconds until keybaordlight is turned off  
+  `--brightness `  (0-50) default keyboard illumination brightness  
+  `--colour `      default colour  
+
+  The default brightness and colour are only set after the keyboard illumiation is turned off. 
 
 ## Service Management
 
@@ -81,7 +85,7 @@ The installation script:
 
 ## Notes
 
-- To set the default colour, just turn the keyboardlight off. After reaching the timeout, the keyboard will be initialized with the setting from --brightness and --colour 
+- To set the default colour, just turn the keyboardlight off. After reaching the timeout, the keyboard will be initialized with the setting from `--brightness` and `--colour` 
 - Requires compatible RGB keyboard with sysfs interface
 - Debug using `journalctl -u keyboardlight-idle -f`
 - Uninstall by removing:
