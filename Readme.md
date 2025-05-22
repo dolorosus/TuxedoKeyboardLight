@@ -32,7 +32,7 @@ Adaptation to other hardware that also follows the sysfs standard for keyboard i
 
 1. **Clone the repository**
 ```
-git clone https://github.com/yourusername/keyboardlight-idle.git
+git clone https://github.com/dolorosus/TuxedoKeyboardLighting.git
 cd keyboardlight-idle
 ```
 
@@ -60,6 +60,7 @@ ExecStart=/usr/local/bin/keyboardlight-idle \
   --brightness 4 \           
   --colour "#0000ff"  
 ```
+**Parameters:**
   `--timeout `     Seconds until keyboard illumination is turned off  
   `--brightness `  (0-50) default keyboard illumination brightness  
   `--colour `      default colour  
