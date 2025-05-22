@@ -62,8 +62,9 @@ ExecStart=/usr/local/bin/keyboardlight-idle \
   `--timeout `     Seconds until keybaordlight is turned off  
   `--brightness `  (0-50) default keyboard illumination brightness  
   `--colour `      default colour  
+  `--noeffect `    Turning light off without effect
 
-  The default brightness and colour are only set after the keyboard illumiation is turned off. 
+  The keyboard illumiation is reset to default brightness and colour, if the keyboard illumiation is turned off. 
 
 ## Service Management
 
@@ -83,9 +84,7 @@ The installation script:
 - Deploys to `/usr/local/bin`
 - Configures logging rotation
 
-## Notes
-
-- To set the default colour, just turn the keyboardlight off. After reaching the timeout, the keyboard will be initialized with the setting from `--brightness` and `--colour` 
+## Notes 
 - Requires compatible RGB keyboard with sysfs interface
 - Debug using `journalctl -u keyboardlight-idle -f`
 - Uninstall by removing:
@@ -93,6 +92,8 @@ The installation script:
   - `/etc/systemd/system/keyboardlight-idle.service`
 
 If you're using Plasma, you can define keyboard shortcuts for controlling the keyboard illumination brightness e.g. `meta+F1` and `meta+F2`.
+
+To set the default colour and brightness, just turn the keyboardlight off. After reaching the timeout, the keyboard will be initialized with the setting from `--brightness` and `--colour`
 
 ## License
 
