@@ -59,7 +59,7 @@ ExecStart=/usr/local/bin/keyboardlight-idle \
   --brightness 4 \           
   --colour "#0000ff"  
 ```
-  `--timeout `     Seconds until keybaordlight is turned off  
+  `--timeout `     Seconds until keyboard illumination is turned off  
   `--brightness `  (0-50) default keyboard illumination brightness  
   `--colour `      default colour  
   `--noeffect `    Turning light off without effect
