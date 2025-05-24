@@ -1,9 +1,9 @@
-# Keyboard lighting control for Tuxedo Stellaris Gen. 6 (and maybe others) 
+# Keyboard illumination control for Tuxedo Stellaris Gen. 6 (and maybe others) 
 
-## Switches the keyboard lighting on with a certain brightness and switches it off again after an adjustable period of inactivity.
+## Switches the keyboard illumination  on with a certain brightness and switches it off again after an adjustable period of inactivity.
 
 ## Why this little script?
-Because by default the keyboard lighting is only switched off when the screen saver appears. This time span was too long for me personally.
+Because by default the keyboard illumination is only switched off when the screen saver appears. This time span was too long for me personally.
 This script turnes the keyboard illumination after a configurable timespan `--timeout ` off. It remembers the current brightness and color settings. If the keyboard illumiation is turned off it will be set to the vaules given in `--brightness` and `--colour`.
 The keyboard illumination is turned using various effects (kids all like it). This can be turned off using `--noeffects`
 
