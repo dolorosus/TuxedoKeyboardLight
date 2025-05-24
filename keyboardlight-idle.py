@@ -29,7 +29,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-class KeyboardLighting:
+class KeyboardLight:
 
     def __init__(self, default_brightness, default_hex_colour, no_effect=False):
 
@@ -417,7 +417,7 @@ def main():
         logger.error("Root privileges required")
         sys.exit(1)
 
-    keyboard = KeyboardLighting(args.brightness, args.hexcolour, args.noeffect)
+    keyboard = KeyboardLight(args.brightness, args.hexcolour, args.noeffect)
     colour = keyboard.hex_to_rgb(args.hexcolour)
 
     # Signalhandler for clean Exit
