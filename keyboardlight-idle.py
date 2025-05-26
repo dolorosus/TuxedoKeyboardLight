@@ -28,31 +28,32 @@ formatter = logging.Formatter(
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-
 class KeyboardLight:
 
-    def __init__(self, default_brightness, default_hex_colour, no_effect=False):
+    def __init__(self, def_brightness, def_hex_colour, no_effect=False):
 
         self.classpath = "/sys/class/leds"
         self.keys = self._init_key_paths()
         self.brightness_path = {
             i: os.path.join(p, "brightness") for i, p in self.keys.items()
         }
-        self.max_brightness_cache = self._cache_max_brightness()
+        self.max_brightness_cache = self._cache_max_brightness(self.keys)
         self.multi_intensity_path = {
             i: os.path.join(p, "multi_intensity") for i, p in self.keys.items()
         }
 
-        self._init_handles()
+        self.brightness_hdls, self.colour_hdls = self._init_handles(self.keys)
 
-        self.default_colour = self.hex_to_rgb(default_hex_colour)
+        self.knam2num = self._keynames()
+
+        self.def_colour = self.hex_to_rgb(def_hex_colour)
         self.colour_cache = self._save_keyboard_multi_intensity()
-        self.default_brightness = default_brightness
-        self.last_brightness = default_brightness
+        self.def_brightness = def_brightness
+        self.last_brightness = def_brightness
 
         self.no_effect = no_effect
 
-        self.off_actions = {
+        self.off_effects = {
             1: self.off1,
             2: self.off2,
             3: self.off3,
@@ -60,7 +61,10 @@ class KeyboardLight:
             5: self.off5,
             6: self.off6,
             7: self.off7,
-            8: self.off,
+            8: self.off8,
+            9: self.off9,
+            10: self.off10,
+            11: self.off_generic,
         }
 
     def _init_key_paths(self):
@@ -80,26 +84,151 @@ class KeyboardLight:
         )
         return keys
 
-    def _init_handles(self):
+    @staticmethod
+    def _keynames():
+        kl5 = {
+            "esc": 105,
+            "f1": 106,
+            "f2": 107,
+            "f3": 108,
+            "f4": 109,
+            "f5": 110,
+            "f6": 111,
+            "f7": 112,
+            "f8": 113,
+            "f9": 114,
+            "f10": 115,
+            "f11": 116,
+            "f12": 117,
+            "print": 118,
+            "insert": 119,
+            "delete": 120,
+            "pos1": 121,
+            "end": 122,
+            "scr_up": 123,
+            "scr_down": 124,
+        }
+        kl4 = {
+            "circ": 84,
+            "1": 85,
+            "2": 86,
+            "3": 87,
+            "4": 88,
+            "5": 89,
+            "6": 90,
+            "7": 91,
+            "8": 92,
+            "9": 93,
+            "0": 94,
+            "sz": 95,
+            "eque": 96,
+            "BS": 98,
+            "numpad_num": 99,
+            "numpad_slash": 100,
+            "numpad_mult": 101,
+            "numpad_minus": 102,
+        }
+        kl3 = {
+            "tab": 63,
+            "q": 65,
+            "w": 66,
+            "e": 67,
+            "r": 68,
+            "t": 69,
+            "z": 70,
+            "u": 71,
+            "i": 72,
+            "o": 73,
+            "p": 74,
+            "ü": 75,
+            "+": 76,
+            "enter": 77,
+            "keypad_4": 78,
+            "keypad_5": 79,
+            "keypad_6": 80,
+            "keypad_+": 81,
+        }
+        kl2 = {
+            "shift_lock": 42,
+            "a": 44,
+            "y": 45,
+            "d": 46,
+            "f": 47,
+            "g": 48,
+            "h": 49,
+            "nj": 50,
+            "k": 51,
+            "l": 52,
+            "ö": 53,
+            "ä": 54,
+            "#": 55,
+            "keypad_4": 57,
+            "keypad_5": 58,
+            "keypad_6": 59,
+        }
+        kl1 = {
+            "lshift": 22,
+            "lt": 23,
+            "y": 24,
+            "x": 25,
+            "c": 26,
+            "v": 27,
+            "b": 28,
+            "n": 29,
+            "m": 30,
+            ",": 31,
+            ".": 32,
+            "-": 33,
+            "rshift": 35,
+            "keypad_1": 36,
+            "keypad_2": 37,
+            "keypad_3": 38,
+            "keypad_enter": 39,
+        }
+        kl0 = {
+            "lstrg": 0,
+            "fn": 2,
+            "tux": 3,
+            "lalt": 4,
+            "space": 7,
+            "altgr": 10,
+            "rstrg": 12,
+            "cup": 14,
+            "cdown": 18,
+            "cright": 15,
+            "cleft": 13,
+            "keypad_0": 16,
+            "keypad_colon": 17,
+        }
+        k = {}
+        k.update(kl0)
+        k.update(kl1)
+        k.update(kl2)
+        k.update(kl3)
+        k.update(kl4)
+        k.update(kl5)
+        return k
 
-        self.brightness_handles = {}
-        self.colour_handles = {}
+    @staticmethod
+    def _init_handles(keys):
 
-        for key in self.keys:
+        brightness_hdl = {}
+        colour_hdl = {}
+
+        for key in keys:
             try:
-                self.brightness_handles[key] = open(
-                    os.path.join(self.keys[key], "brightness"), "r+"
-                )
-                self.colour_handles[key] = open(
-                    os.path.join(self.keys[key], "multi_intensity"), "r+"
-                )
+                brightness_hdl[key] = open(os.path.join(keys[key], "brightness"), "r+")
+                colour_hdl[key] = open(os.path.join(keys[key], "multi_intensity"), "r+")
             except Exception as e:
-                logger.error(f"Fehler beim Öffnen der Handles für Key {key}: {str(e)}")
+                logger.error(f"Error openening handle for key {key}: {str(e)}")
 
-    def _cache_max_brightness(self):
+        return brightness_hdl, colour_hdl
+
+    @staticmethod
+    def _cache_max_brightness(keys):
         return {
             key: int(open(os.path.join(path, "max_brightness")).read().strip())
-            for key, path in self.keys.items()
+            for key, path in keys.items()
         }
 
     def _save_keyboard_multi_intensity(self):
@@ -119,7 +248,7 @@ class KeyboardLight:
     def restore_keyboard_colours(self):
         for key, c in self.colour_cache.items():
             if c == (0, 0, 0):
-                c = self.default_colour
+                c = self.def_colour
             try:
                 # logger.debug(f"restore_keyboard_colors({key}, {c})")
                 self.set_colour(key, c)
@@ -130,18 +259,20 @@ class KeyboardLight:
         for key in self.keys:
             c = self.colour_cache[key]
             try:
-                logger.debug(f"default_keyboard_colors({key}, {self.default_colour})")
-                self.set_colour(key, self.default_colour)
+                logger.debug(f"default_keyboard_colors({key}, {self.def_colour})")
+                self.set_colour(key, self.def_colour)
             except Exception as e:
                 logger.error(f"Error restoreing colour for key {key}: {str(e)}")
 
     def set_leds_on(self):
         if self.last_brightness < 2:
-            self.last_brightness = self.default_brightness
-            self.set_brightness(0, self.last_brightness)
+            self.last_brightness = self.def_brightness
             self.set_default_keyboard_colours()
+            self.set_brightness(0, self.last_brightness)
         else:
             self.set_brightness(0, self.last_brightness)
+
+    """All effects are highly adapted to the Stellaris keyboard and won't work correct on other systems"""
 
     def off1(self):
         _ = [range(64, -1, -1), range(0, 64)]
@@ -169,7 +300,7 @@ class KeyboardLight:
         self.set_brightness(0, 0)
 
     def off4(self):
-        _ = list(range(0, 126, 1))
+        _ = list(self.knam2num.values())
         rnd.shuffle(_)
 
         for i in _:
@@ -177,16 +308,16 @@ class KeyboardLight:
         self.set_brightness(0, 0)
 
     def off5(self):
-        _ = list(range(0, 126, 1))
+        _ = list(self.knam2num.values())
         rnd.shuffle(_)
 
         for i in _:
-            for c in [(255, 0, 0)]:
-                self.set_colour(i, (255, 0, 0))
-        self.set_brightness(0, 0)
+            for c in [(255, 0, 0), (255, 255, 0)]:
+                self.set_colour(i, c)
+            self.set_brightness(0, 0)
 
     def off6(self):
-        _ = list(range(0, 126, 1))
+        _ = list(self.knam2num.values())
         rnd.shuffle(_)
 
         for i in _:
@@ -198,86 +329,144 @@ class KeyboardLight:
     def off7(self):
         for i in range(self.get_brightness(0), self.max_brightness_cache[0]):
             self.set_brightness(0, i)
-            # time.sleep(0.01)
+
         for i in range(self.max_brightness_cache[0], -1, -1):
             self.set_brightness(0, i)
 
-    def off(self):
+    def off8(self):
+        k = [
+            range(0, 20),
+            range(20, 40),
+            range(40, 60),
+            range(62, 82),
+            range(83, 103),
+            range(105, 125),
+        ]
+        colours = [(0, 0, 0)]
+        for c in colours:
+            for i in [range(0, 20), range(19, -1, -1)][rnd.randrange(2)]:
+                for j in range(0, 6):
+                    self.set_colour(k[j][i], c)
+
+    def off9(self):
+        k = [
+            range(0, 20),
+            range(20, 40),
+            range(40, 60),
+            range(62, 82),
+            range(83, 103),
+            range(105, 125),
+        ]
+        colours = [(0, 0, 0)]
+
+        for c in colours:
+            for i in range(0, 20):
+                self.set_colour(k[0][i], c)
+                self.set_colour(k[1][19 - i], c)
+                self.set_colour(k[2][i], c)
+                self.set_colour(k[3][19 - i], c)
+                self.set_colour(k[4][i], c)
+                self.set_colour(k[5][19 - i], c)
+
+    def off10(self):
+        k = [
+            range(0, 20),
+            range(20, 40),
+            range(40, 60),
+            range(62, 82),
+            range(83, 103),
+            range(105, 125),
+        ]
+        colours = [(255, 128, 0)]
+        for c in colours:
+            for i in range(0, 20):
+                self.set_colour(k[0][i], c)
+                self.set_colour(k[1][19 - i], c)
+                self.set_colour(k[2][i], c)
+                self.set_colour(k[3][19 - i], c)
+                self.set_colour(k[4][i], c)
+                self.set_colour(k[5][19 - i], c)
+
+                self.set_colour(k[0][i], (0, 0, 0))
+                self.set_colour(k[1][19 - i], (0, 0, 0))
+                self.set_colour(k[2][i], (0, 0, 0))
+                self.set_colour(k[3][19 - i], (0, 0, 0))
+                self.set_colour(k[4][i], (0, 0, 0))
+                self.set_colour(k[5][19 - i], (0, 0, 0))
+
+    """ off generic """
+
+    def off_generic(self):
         self.set_brightness(0, 0)
 
     def set_leds_off(self):
+        """Saves the current keyboard colours
+        turn keyboardlight off with random effect
+        set brightness to 0
+        restores colours
+        """
         self.last_brightness = self.get_brightness(0)
         self.save_keyboard_colours()
         if self.no_effect:
-            self.off()
+            self.off_generic()
         else:
-            off_effect = self.off_actions.get(
-                rnd.randint(1, len(self.off_actions)), self.off
-            )
-            off_effect()
+            self.off_effects.get(
+                rnd.randint(1, len(self.off_effects)), self.off_generic
+            )()
 
         self.set_brightness(0, 0)
         self.restore_keyboard_colours()
 
-    def get_brightness(self, key_index):
+    def get_brightness(self, key_idx):
 
-        if key_index not in self.brightness_handles:
+        if key_idx not in self.brightness_hdls:
             return 0
         try:
-            self.brightness_handles[key_index].seek(0)
-            return int(self.brightness_handles[key_index].read().strip())
+            self.brightness_hdls[key_idx].seek(0)
+            return int(self.brightness_hdls[key_idx].read().strip())
         except Exception as e:
             logger.error(f"Error getting brightness: {str(e)}")
             return 0
 
-    def set_brightness(self, key_index, brightness):
-        if key_index not in self.brightness_handles:
-            return
-        try:
-            safe_brightness = min(brightness, self.max_brightness_cache[key_index])
-            self.brightness_handles[key_index].seek(0)
-            self.brightness_handles[key_index].write(str(safe_brightness))
-            self.brightness_handles[key_index].flush()
-        except Exception as e:
-            logger.error(f"Error setting brightness: {str(e)}")
+    def get_colour(self, key_idx):
 
-    def get_colour(self, key_index):
-
-        if key_index not in self.colour_handles:
+        if key_idx not in self.colour_hdls:
             return (0, 0, 0)
         try:
-            self.colour_handles[key_index].seek(0)
-            multicol = self.colour_handles[key_index].readline()
+            self.colour_hdls[key_idx].seek(0)
+            multicol = self.colour_hdls[key_idx].readline()
             return tuple([int(x) for x in multicol.strip().split()])
         except Exception as e:
             logger.error(f"Error getting colour: {str(e)}")
             return (0, 0, 0)
-
-    def get_cached_colour(self, key_idx):
-        return self.colour_cache[key_idx]
-
-    def set_colour(self, key_index, rgb):
-        if key_index not in self.colour_handles:
+        
+    def set_brightness(self, key_idx, brightness):
+        if key_idx not in self.brightness_hdls:
             return
         try:
-            self.colour_handles[key_index].seek(0)
-            self.colour_handles[key_index].write(f"{rgb[0]} {rgb[1]} {rgb[2]}")
-            self.colour_handles[key_index].flush()
+            safe_brightness = min(brightness, self.max_brightness_cache[key_idx])
+            self.brightness_hdls[key_idx].write(str(safe_brightness))
+            self.brightness_hdls[key_idx].flush()
+        except Exception as e:
+            logger.error(f"Error setting brightness: {str(e)}")
+
+    def set_colour(self, key_idx, rgb):
+        if key_idx not in self.colour_hdls:
+            return
+        try:
+            # self.colour_hdls[key_index].seek(0)
+            self.colour_hdls[key_idx].write(f"{rgb[0]} {rgb[1]} {rgb[2]}")
+            self.colour_hdls[key_idx].flush()
         except Exception as e:
             logger.error(f"Error setting colour: {str(e)}")
-
-    def set_hexcolor(self, key_idx, hex_colour):
-        rgb = self.hex_to_rgb(hex_colour)
-        try:
-            pfad = os.path.join(self.keys[key_idx], "multi_intensity")
-            with open(pfad, "w") as f:
-                f.write(f"{rgb[0]} {rgb[1]} {rgb[2]}")
-        except Exception as e:
-            logger.error(f"Error setting color: {str(e)}")
-
+    
     def config_key(self, key_idx, brightness, rgb):
         self.set_brightness(key_idx, brightness)
         self.set_colour(key_idx, rgb)
+
+    def set_hexcolor(self, key_idx, hex_colour):
+        rgb = self.hex_to_rgb(hex_colour)
+        self.set_colour(key_idx, (f"{rgb[0]} {rgb[1]} {rgb[2]}"))
 
     def hex_to_rgb(self, hex_color):
 
@@ -290,7 +479,6 @@ class KeyboardLight:
             raise ValueError(f"Invalid characters in hex colour code:'{hex_color}'")
 
         return (int(s[0:2], 16), int(s[2:4], 16), int(s[4:6], 16))
-
 
 class DeviceMonitor:
     def __init__(self, keyboard, timeout, default_brightness, default_colour):
@@ -345,7 +533,6 @@ class DeviceMonitor:
         ]
         await self._inactivity_check()
 
-
 def parse_arguments():
     def hex_color_type(value):
         s = str(value).lstrip("#").upper()
@@ -387,7 +574,6 @@ def parse_arguments():
     )
     return parser.parse_args()
 
-
 async def event_loop(keyboard, timeout, brightness, colour):
     devices = [InputDevice(path) for path in list_devices()]
     input_devices = [
@@ -422,6 +608,7 @@ def main():
 
     # Signalhandler for clean Exit
     def signal_handler(sig, frame):
+
         keyboard.set_brightness(0, args.brightness)
         logger.info("Restored brightness and exited")
         sys.exit(0)
@@ -430,7 +617,7 @@ def main():
     signal.signal(signal.SIGTERM, signal_handler)
 
     try:
-        keyboard.set_brightness(0, args.brightness)
+        #keyboard.set_brightness(0, args.brightness)
         asyncio.run(event_loop(keyboard, args.timeout, args.brightness, colour))
     except KeyboardInterrupt:
         signal_handler(None, None)
