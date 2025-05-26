@@ -2,10 +2,11 @@
 
 ## Switches the keyboard illumination  on with a certain brightness and switches it off again after an adjustable period of inactivity.
 
-## Why this little script?
-Because by default the keyboard illumination is only switched off when the screen saver appears. This time span was too long for me personally.
-This script turnes the keyboard illumination after a configurable timespan `--timeout ` off. It remembers the current brightness and color settings. If the keyboard illumiation is turned off it will be set to the vaules given in `--brightness` and `--colour`.
-The keyboard illumination is turned using various effects (kids all like it). This can be turned off using `--noeffects`
+## So, why use this little script?
+Just so you know, the keyboard light is only switched off when the screen saver appears. This time was too long for me.
+This script can be set to switch off the keyboard backlight after a timeout period. It remembers the current brightness and colour settings. If you turn off the keyboard illumination, it'll be set to the values given in the `--brightness` and `--colour` sections.
+The keyboard illumination is turned off using various effects (kids all like it). These effects are specific to the Tuxedo Stellaris machine. They usually won't work on other machines and are poorly coded.
+You can use the `--noeffects`' switch to turn off the effects.
 
 
 ## Other Hardware
