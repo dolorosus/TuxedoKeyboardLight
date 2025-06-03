@@ -49,19 +49,12 @@ systemctl status keyboardlight-idle
 
 ## Configuration
 
-Edit the service file to modify startup parameters:
+install.sh accepts `timeout` `brightness` and `colour` as parameters
 ```
-sudo nano /etc/systemd/system/keyboardlight-idle.service
+bash ./install.sh 20 4 #ff0000
 ```
 
-**Recommended parameters:**
-```
-ExecStart=/usr/local/bin/keyboardlight-idle \
-  --timeout 20 \
-  --brightness 4 \           
-  --colour "#0000ff"  
-```
-**Parameters:**
+**Parametersfor keyboardlight-idle.py:**
   `--timeout `     Seconds until keyboard illumination is turned off  
   `--brightness `  (0-50) default keyboard illumination brightness  
   `--colour `      default colour  
@@ -90,9 +83,8 @@ The installation script:
 ## Notes 
 - Requires compatible RGB keyboard with sysfs interface
 - Debug using `journalctl -u keyboardlight-idle -f`
-- Uninstall by removing:
-  - `/usr/local/bin/keyboardlight-idle`
-  - `/etc/systemd/system/keyboardlight-idle.service`
+- Uninstall by running uninstall.sh
+
 
 If you're using Plasma, you can define keyboard shortcuts for controlling the keyboard illumination brightness e.g. `meta+F1` and `meta+F2`.
 
