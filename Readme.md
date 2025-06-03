@@ -55,11 +55,11 @@ install.sh accepts `timeout` `brightness` and `colour` as parameters
 bash ./install.sh 20 4 #ff0000
 ```
 
-**Parameters accepted by keyboardlight-idle.py:**
-  `--timeout `     Seconds until keyboard illumination is turned off  
-  `--brightness `  (0-50) default keyboard illumination brightness  
-  `--colour `      default colour  
-  `--noeffect `    Turning light off without effect
+**Parameters accepted by keyboardlight-idle.py:**  
+    `--timeout `     Seconds until keyboard illumination is turned off  
+    `--brightness `  (0-50) default keyboard illumination brightness  
+    `--colour `      default colour  
+    `--noeffect `    Turning light off without effect
 
   The keyboard illumiation is reset to default brightness and colour, if the keyboard illumiation is turned off. 
 
