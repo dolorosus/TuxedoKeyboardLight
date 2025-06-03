@@ -51,10 +51,11 @@ systemctl status keyboardlight-idle
 
 install.sh accepts `timeout` `brightness` and `colour` as parameters
 ```
+# install with a timeout of 20s, brightness 4 and red as default colour
 bash ./install.sh 20 4 #ff0000
 ```
 
-**Parametersfor keyboardlight-idle.py:**
+**Parameters accepted by keyboardlight-idle.py:**
   `--timeout `     Seconds until keyboard illumination is turned off  
   `--brightness `  (0-50) default keyboard illumination brightness  
   `--colour `      default colour  
