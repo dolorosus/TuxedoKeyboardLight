@@ -3,7 +3,7 @@
 #
 
 pname="keyboardlight-idle"
-service_file="$pname.service"
+service_file="${pname}.service"
 
 sudo systemctl disable ${service_file}
 sudo rm /etc/systemd/system/${service_file}
