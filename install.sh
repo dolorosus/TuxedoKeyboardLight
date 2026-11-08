@@ -2,9 +2,9 @@
 
 
 pname="keyboardlight-idle"
-tmp_dir="/tmp/$pname"
-venv_dir="/tmp/.venv$pname"
-service_file="/tmp/$pname.service"
+tmp_dir="$(mktemp -d)"
+venv_dir="${tmp_dir}/.venv"
+service_file="${tmp_dir}/$pname.service"
 dist_dir="dist"
 build_dir="build"
 
@@ -12,18 +12,13 @@ timeout=${1:-20}
 brightness=${2:-4}
 colour=${3:-"#0000ff"}
 
-# Vorherige temporäre Daten entfernen
-rm -rf "$tmp_dir"
-mkdir -p "$tmp_dir"
-rm -rf "$dist_dir" "$build_dir"
-
 set -euo pipefail
 
-echo "creating venv in $venv_dir"
-python3 -m venv "$venv_dir"
-source "$venv_dir/bin/activate"
+echo "creating venv in ${venv_dir}"
+python3 -m venv "${venv_dir}"
+source "${venv_dir}/bin/activate"
 
-echo "install pyinstaller to $venv_dir"
+echo "install pyinstaller to ${venv_dir}"
 pip install -r requirements.txt
 
 pyinstaller --onefile --noupx --optimize 2 --strip "$pname.py"
@@ -35,7 +30,7 @@ echo "copy dist/$pname to /usr/local/bin"
 sudo cp "$dist_dir/$pname" /usr/local/bin/
 
 # systemd Service-Unit schreiben (mit absoluten Pfaden und Logging)
-cat >"$service_file" <<EOF
+cat >"${service_file}" <<EOF
 [Unit]
 Description=Turn off Keyboard light after inactivity
 
