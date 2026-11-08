@@ -1,10 +1,9 @@
 #!/bin/bash
 
-
 pname="keyboardlight-idle"
 tmp_dir="$(mktemp -d)"
 venv_dir="${tmp_dir}/.venv"
-service_file="${tmp_dir}/$pname.service"
+service_file="${tmp_dir}/${pname}.service"
 dist_dir="dist"
 build_dir="build"
 
@@ -21,13 +20,13 @@ source "${venv_dir}/bin/activate"
 echo "install pyinstaller to ${venv_dir}"
 pip install -r requirements.txt
 
-pyinstaller --onefile --noupx --optimize 2 --strip "$pname.py"
+pyinstaller --onefile --noupx --optimize 2 --strip "${pname}.py"
 
-echo "stopping $pname"
-sudo systemctl stop "$pname" 2>/dev/null || true
+echo "stopping ${pname}"
+sudo systemctl stop "${pname}" 2>/dev/null || true
 
-echo "copy dist/$pname to /usr/local/bin"
-sudo cp "$dist_dir/$pname" /usr/local/bin/
+echo "copy dist/${pname} to /usr/local/bin"
+sudo cp "${dist_dir}/${pname}" /usr/local/bin/
 
 # systemd Service-Unit schreiben (mit absoluten Pfaden und Logging)
 cat >"${service_file}" <<EOF
@@ -36,10 +35,10 @@ Description=Turn off Keyboard light after inactivity
 
 [Service]
 Type=simple
-ExecStartPre=-/usr/bin/killall -9 $pname
+ExecStartPre=-/usr/bin/killall -9 ${pname}
 ExecStart=/usr/local/bin/$pname --brightness ${brightness} --timeout ${timeout} --colour ${colour}
-StandardOutput=append:/var/log/$pname.log
-StandardError=append:/var/log/$pname.log
+StandardOutput=append:/var/log/${pname}.log
+StandardError=append:/var/log/${pname}.log
 Restart=on-success
 RestartSec=2
 
@@ -47,9 +46,9 @@ RestartSec=2
 WantedBy=multi-user.target
 EOF
 
-sudo mv "$service_file" "/etc/systemd/system/$pname.service"
+sudo mv "${service_file}" "/etc/systemd/system/${pname}.service"
 
-echo "enable and start $pname.service"
+echo "enable and start ${pname}.service"
 sudo systemctl daemon-reload
-sudo systemctl enable "$pname.service"
-sudo systemctl start "$pname.service"
+sudo systemctl enable "${pname}.service"
+sudo systemctl start "${pname}.service"
